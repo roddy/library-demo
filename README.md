@@ -11,7 +11,9 @@ demonstration.
 This application uses Maven for dependency management. If you don't have Maven installed, we provide a local maven 
 wrapper instance (`mvnw`) that you can use instead.
 
-This project uses **Java 11**. It was written on Linux and tested on both Linux (Ubuntu) and Windows 10. 
+This project uses **Java 17**. It uses Java records, which were added in JDK 14 as an experiment; you can down-rev this 
+project to any version of the JDK that supports Records. If you wish to down-rev further (eg. to Java 11 or 8), you'll 
+need to rewrite the records to be simple "POJO"-type classes with getters and setters.  
 
 ## Build and run
 
@@ -80,3 +82,9 @@ scanned and accounted for.
 
 To see where we invoke the rules, refer to the 
 [LibraryBookService](./src/main/java/app/roddy/librarydemo/LibraryBookService.java) class.
+
+## Dependency version information
+
+* Maven 3+
+* Spring-Boot BOM 2.5.5 (Data-JPA, Web, Actuator)
+* Drools 7.59.0.Final (Classic, with mvel)
