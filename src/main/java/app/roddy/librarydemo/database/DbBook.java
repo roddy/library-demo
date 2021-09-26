@@ -27,6 +27,18 @@ public class DbBook {
     @Column(name = "borrowed_on")
     private OffsetDateTime borrowedOn;
 
+    public DbBook() {}
+
+    public DbBook(Integer id, String title, String author, String description, Integer year, DbUser borrowedBy, OffsetDateTime borrowedOn) {
+        this.id = id;
+        this.title = title;
+        this.author = author;
+        this.description = description;
+        this.year = year;
+        this.borrowedBy = borrowedBy;
+        this.borrowedOn = borrowedOn;
+    }
+
     public Integer getId() {
         return id;
     }
