@@ -29,7 +29,7 @@ public class LibraryBookService {
         this.kContainer = kContainer;
     }
 
-    public boolean processBookEvent(BookEvent event) {
+    public BookEventResult processBookEvent(BookEvent event) {
         // First, get the necessary data from the database
         Person person = getUserFromEvent(event);
 
@@ -43,20 +43,18 @@ public class LibraryBookService {
         session.fireAllRules();
 
         // If the action is not allowed, log some info and return false
+        // If the action is allowed, perform the action as requested
         if (!result.isSuccess()) {
             logger.info("Failed to checkout book. Reason = "+result.getReason());
-            return false;
-        }
-
-        // If the action is allowed, perform the action as requested
-        if (event.getType() == BookEventType.BORROW){
-            return borrowBook(event);
+        } else if (event.getType() == BookEventType.BORROW){
+            borrowBook(event);
         } else {
-            return returnBook(event.getBookId());
+            returnBook(event.getBookId());
         }
+        return result;
     }
 
-    private boolean borrowBook(BookEvent event) {
+    private void borrowBook(BookEvent event) {
         OffsetDateTime borrowDate = OffsetDateTime.now().withHour(12).withMinute(0).withSecond(0);
         DbUser user = dataService.getUserById(event.getUserId());
         DbBook book = this.dataService.getBookById(event.getBookId());
@@ -64,15 +62,13 @@ public class LibraryBookService {
         book.setBorrowedBy(user);
         book.setBorrowedOn(borrowDate);
         this.dataService.saveBook(book);
-        return true;
     }
 
-    private boolean returnBook(Integer bookId) {
+    private void returnBook(Integer bookId) {
         DbBook book = this.dataService.getBookById(bookId);
         book.setBorrowedBy(null);
         book.setBorrowedOn(null);
         this.dataService.saveBook(book);
-        return true;
     }
 
     private Person getUserFromEvent(BookEvent event) {

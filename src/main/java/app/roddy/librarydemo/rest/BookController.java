@@ -4,6 +4,7 @@ import app.roddy.librarydemo.DataService;
 import app.roddy.librarydemo.LibraryBookService;
 import app.roddy.librarydemo.database.DbBook;
 import app.roddy.librarydemo.models.BookEvent;
+import app.roddy.librarydemo.models.BookEventResult;
 import app.roddy.librarydemo.models.BookEventType;
 import app.roddy.librarydemo.rest.models.BookDetails;
 import app.roddy.librarydemo.rest.models.BookListing;
@@ -64,7 +65,7 @@ public class BookController {
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<Void> invokeAction(@PathVariable(name = "id") Integer bookId,
+    public ResponseEntity<?> invokeAction(@PathVariable(name = "id") Integer bookId,
                                              @RequestParam BookEventType action,
                                              @RequestParam(required = false, name = "patronId") Integer userId) {
 
@@ -73,11 +74,11 @@ public class BookController {
         event.setUserId(userId);
         event.setType(action);
 
-        boolean success = this.libraryBookService.processBookEvent(event);
-        if (success) {
+        BookEventResult result = this.libraryBookService.processBookEvent(event);
+        if (result.isSuccess()) {
             return ResponseEntity.noContent().build();
         } else {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(result);
         }
     }
 }
