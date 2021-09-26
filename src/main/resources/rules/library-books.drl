@@ -1,0 +1,64 @@
+package rules;
+
+import app.roddy.librarydemo.models.BookEvent;
+import app.roddy.librarydemo.models.BookEventResult;
+import app.roddy.librarydemo.models.BookEventType;
+import app.roddy.librarydemo.models.CheckedOutBook;
+import app.roddy.librarydemo.models.Person;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+
+//dialect "mvel";
+
+global BookEventResult result;
+
+rule "Book is returned"
+when
+  BookEvent( type == BookEventType.RETURN )
+then
+  result.setSuccess(true);
+end
+
+rule "Book is already checked out by this person"
+when
+  BookEvent( type == BookEventType.BORROW,
+             $id: bookId )
+  Person( $books: checkedOutBooks )
+
+  exists( CheckedOutBook( id == $id ) from $books )
+then
+  result.setSuccess(false);
+  result.setReason("Book is already checked out (duplicate action)");
+end
+
+rule "Unknown person"
+when
+  BookEvent( type == BookEventType.BORROW )
+  not( Person() )
+then
+  result.setSuccess(false);
+  result.setReason("User does not exist");
+end
+
+rule "Person has 3+ existing checked out books"
+when
+  BookEvent( type == BookEventType.BORROW )
+  Person( $books: checkedOutBooks )
+  List( size >= 3 ) from $books
+then
+  result.setSuccess(false);
+  result.setReason("User has already checked out 3 books");
+end
+
+rule "Person has an overdue book"
+when
+  BookEvent( type == BookEventType.BORROW )
+  Person( $books: checkedOutBooks )
+
+  $checkoutLimit: OffsetDateTime() from OffsetDateTime.now().withHour(12).withMinute(0).withSecond(0).minusDays(7)
+  exists( CheckedOutBook( checkedOutOn.isBefore($checkoutLimit) ) from $books )
+then
+  result.setSuccess(false);
+  result.setReason("User has overdue book(s)");
+end
