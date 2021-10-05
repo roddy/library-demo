@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@WebMvcTest(UserController.class)
 class UserControllerTest {
 
     @Autowired
@@ -31,9 +31,6 @@ class UserControllerTest {
 
     @MockBean
     DataService dataService;
-
-    @MockBean
-    BookController ignored;
 
     @BeforeEach
     void resetMocks() {
@@ -63,15 +60,22 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.checkedOutBooks[0].id", is(book1.getId())))
                 .andExpect(jsonPath("$.checkedOutBooks[0].title", is(book1.getTitle())))
                 .andExpect(jsonPath("$.checkedOutBooks[0].author", is(book1.getAuthor())))
-                .andExpect(jsonPath("$.checkedOutBooks[0].dueOn", is(book1.getBorrowedOn().plusDays(7))))
+                .andExpect(jsonPath("$.checkedOutBooks[0].dueOn", is(calculateDueDate(book1.getBorrowedOn()))))
                 .andExpect(jsonPath("$.checkedOutBooks[0].isOverdue", is(false)))
 
                 .andExpect(jsonPath("$.checkedOutBooks[1].id", is(book2.getId())))
                 .andExpect(jsonPath("$.checkedOutBooks[1].title", is(book2.getTitle())))
                 .andExpect(jsonPath("$.checkedOutBooks[1].author", is(book2.getAuthor())))
-                .andExpect(jsonPath("$.checkedOutBooks[1].dueOn", is(book2.getBorrowedOn().plusDays(7))))
+                .andExpect(jsonPath("$.checkedOutBooks[1].dueOn", is(calculateDueDate(book2.getBorrowedOn()))))
                 .andExpect(jsonPath("$.checkedOutBooks[1].isOverdue", is(true)));
 
         Mockito.verify(this.dataService, Mockito.times(1)).getUserById(66);
+    }
+
+    private String calculateDueDate(OffsetDateTime borrowedOn) {
+        return borrowedOn.withHour(12)
+                .withMinute(0)
+                .withSecond(0)
+                .plusDays(7).toString();
     }
 }

@@ -15,6 +15,10 @@ This project uses **Java 17**. It uses Java records, which were added in JDK 14 
 project to any version of the JDK that supports Records. If you wish to down-rev further (eg. to Java 11 or 8), you'll 
 need to rewrite the records to be simple "POJO"-type classes with getters and setters.  
 
+The code in this repository is discussed at length in my blog post 
+"[Drools & Databases](https://dev.to/roddy/drools-databases-part-3-the-solution-3j8g)", where I talk about why it's a
+bad idea to interact with a database directly from inside of the rules.
+
 ## Build and run
 
 To build and run this application from the commandline:
@@ -24,6 +28,18 @@ To build and run this application from the commandline:
 ```
 
 The REST api will be available at http://localhost:8080/ .
+
+To build the app and run the tests:
+
+```
+./mvnw package
+```
+
+If the app is already built, the tests can be run standalone:
+
+```
+./mvnw test
+```
 
 ## What is this?
 
@@ -88,3 +104,7 @@ To see where we invoke the rules, refer to the
 * Maven 3+
 * Spring-Boot BOM 2.5.5 (Data-JPA, Web, Actuator)
 * Drools 7.59.0.Final (Classic, with mvel)
+* JDK 17
+
+This project was written, built, and tested with OpenJDK. No guarantees are made about compatibility with Oracle's 
+pay-to-play version of the JDK, but there's no reason it shouldn't work there as well. 

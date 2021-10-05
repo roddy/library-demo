@@ -44,8 +44,8 @@ end
 rule "Person has 3+ existing checked out books"
 when
   BookEvent( type == BookEventType.BORROW )
-  Person( $books: checkedOutBooks )
-  List( size >= 3 ) from $books
+  Person( checkedOutBooks != null,
+          checkedOutBooks.size >= 3 )
 then
   result.setSuccess(false);
   result.setReason("User has already checked out 3 books");
