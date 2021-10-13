@@ -1,3 +1,20 @@
+# BRANCH SPECIFIC README
+
+This branch exists to provide a working example of the issue I reported on StackOverflow 
+[here](https://stackoverflow.com/questions/69332256/how-to-test-list-length-in-drools-7-59). 
+
+The rules can be found in `src/main/resources/rules/library-books.drl`. The problematic rule is called "Person has 3+ 
+existing checked out books".
+
+There are unit tests for the rules using the Droolsassert library under `src/test/java/rules/RulesTest`. 3 tests, 2 
+pass, the one for the 3+ overdue books rules fails. 
+
+* Maven 3
+* OpenJDK 17
+
+Original readme is below. In general this is a Spring-Boot REST app with a H2 in-memory database. You could also use 
+`curl` to test the problematic rule if you feel like it.
+
 # library-demo
 
 This is a demo application for a library book-borrowing application using Drools. This application is intended to show

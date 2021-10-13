@@ -7,7 +7,7 @@ import app.roddy.librarydemo.models.CheckedOutBook;
 import app.roddy.librarydemo.models.Person;
 
 import java.time.OffsetDateTime;
-import java.util.List;
+import java.util.*;
 
 //dialect "mvel";
 
@@ -44,8 +44,8 @@ end
 rule "Person has 3+ existing checked out books"
 when
   BookEvent( type == BookEventType.BORROW )
-  Person( checkedOutBooks != null,
-          checkedOutBooks.size >= 3 )
+  Person( $books: checkedOutBooks != null )
+  ArrayList( size >= 3 ) from $books
 then
   result.setSuccess(false);
   result.setReason("User has already checked out 3 books");
